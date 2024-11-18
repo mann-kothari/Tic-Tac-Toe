@@ -1,55 +1,77 @@
-let turn = 'X';
-let isgameover = false;
-const reset = document.querySelector('#reset');
-//Function to change the turn
-const changeTurn = ()=>{
+let boxes = document.querySelectorAll(".box");
+let resetBtn = document.querySelector("#reset-btn");
+let msg = document.querySelector("#msg");
+let newGameBtn = document.querySelector("#new-btn");
+let msgContainer = document.querySelector(".msg-container");
 
-    return turn === 'X'?'0':'X';
-}
-// Function to check win
-const checkWin = () =>{
-    let boxtexts = document.getElementsByClassName('boxtext');
-    let wins = [
-        [0,1,2],
-        [3,4,5],
-        [6,7,8],
-        [0,3,6],
-        [1,4,7],
-        [2,5,8],
-        [0,4,8],
-        [2,4,6]
-    ];
-    wins.forEach(e =>{
-        if((boxtexts[e[0]].innerText === boxtexts[e[1]].innerText)&&(boxtexts[e[1]].innerText === boxtexts[e[2]].innerText)&&(boxtexts[e[0]].innerText !== '')){
-            document.querySelector('.Info').innerText = boxtexts[e[0]].innerText + " WON";
-            isgameover = true;
-            document.querySelector('.imageBox').getElementsByTagName('img')[0].style.width = "200px" 
+let turnO = false;
+
+const winPatterns = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+];
+
+const enableBtn = () => {
+    for (let box of boxes) {
+        box.disabled = false;
+        box.innerText = '';
+    }
+};
+
+
+const disableBtn = () => {
+    for (let box of boxes) {
+        box.disabled = true;
+    }
+};
+
+const resetGame = () => {
+    turnO = false;
+    enableBtn();
+    msgContainer.classList.add("hide");
+};
+
+const showWinner = (winner) => {
+    msg.innerText = `Winner is ${winner}`;
+    msgContainer.classList.remove("hide");
+    disableBtn();
+};
+
+boxes.forEach((box) => {
+    box.addEventListener("click", () => {
+        if (turnO) {
+            box.innerText = "O";
+            turnO = false;
         }
-    });
-}
-
-
-//Main Logic
-let boxes = document.getElementsByClassName("box");
-Array.from(boxes).forEach(element =>{
-    let boxText = element.querySelector('.boxtext');
-    
-    element.addEventListener('click', ()=>{
-        if(boxText.innerText===''){
-            boxText.innerText = turn;
-            turn = changeTurn();
-            checkWin();
-            if(!isgameover){
-                document.getElementsByClassName('Info')[0].innerText = "Turn for "+ turn;
-            }
+        else {
+            box.innerText = "X";
+            turnO = true;
         }
-        reset.addEventListener('click', e=>{
-            turn = 'X'
-            document.getElementsByClassName('Info')[0].innerText = "Turn for "+ turn;
-            boxText.innerText = '';
-            isgameover = false;
-            document.querySelector('.imageBox').getElementsByTagName('img')[0].style.width = "0"
-        })
+        box.disabled = true;
+
+        checkWinner();
     });
 });
 
+const checkWinner = () => {
+    for (pattern of winPatterns) {
+        let pos1Val = boxes[pattern[0]].innerText;
+        let pos2Val = boxes[pattern[1]].innerText;
+        let pos3Val = boxes[pattern[2]].innerText;
+
+        if (pos1Val != "" && pos2Val != "" && pos3Val != "") {
+            if (pos1Val === pos2Val && pos2Val === pos3Val) {
+                showWinner(pos1Val);
+            }
+        }
+    }
+};
+
+newGameBtn.addEventListener("click", resetGame);
+resetBtn.addEventListener("click", resetGame);
