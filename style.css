@@ -39,8 +39,9 @@ img{
     font-family: 'Courier New', Courier, monospace;
 }
 
-.imageBox{
-    display: none;
+.imageBox img{
+    width: 0;
+    transition: width 1s ease-in-out  ;
 }
 
 .br-0{
